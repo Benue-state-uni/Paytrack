@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -12,12 +12,9 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpRight,
-  ArrowDownRight,
   DollarSign,
-  CreditCard,
   Activity,
   AlertTriangle,
-  Eye,
   Filter,
 } from "lucide-react";
 
@@ -90,6 +87,12 @@ export default function PaytrackDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [active, setActive] = useState("Dashboard");
 
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-slate-100 text-slate-900">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} active={active} setActive={setActive} />
@@ -113,7 +116,7 @@ export default function PaytrackDashboard() {
         <main className="p-4 md:p-6 space-y-6">
           {active === "Dashboard" && (
             <>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard title="Total Revenue" value="₦12.4M" change="+12.5% vs last month" icon={DollarSign} color="bg-emerald-100 text-emerald-600" />
                 <StatCard title="Transactions" value="8,429" change="+8.2% vs last month" icon={ArrowLeftRight} color="bg-blue-100 text-blue-600" />
                 <StatCard title="Active Users" value="3,182" change="+4.1% vs last month" icon={Users} color="bg-purple-100 text-purple-600" />
@@ -151,7 +154,7 @@ export default function PaytrackDashboard() {
           {active === "Transactions" && (
             <div className="bg-white p-6 rounded-2xl border">
               <h2 className="font-bold text-lg mb-4">All Transactions</h2>
-              <p className="text-slate-500 text-sm">This is your Transactions page. It is now responding. You tapped it and it changed.</p>
+              <p className="text-slate-500 text-sm">This is your Transactions page. It is now responding.</p>
               <div className="mt-4 space-y-2">
                 {transactions.map((t) => (
                   <div key={t.id} className="flex justify-between p-3 bg-slate-50 rounded-xl"><span>{t.user} - {t.id}</span><span className="font-bold">{t.amount}</span></div>
@@ -184,4 +187,4 @@ export default function PaytrackDashboard() {
       </div>
     </div>
   );
-          }
+}
