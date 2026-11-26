@@ -15,7 +15,6 @@ import {
   Wallet,
   Activity,
   AlertTriangle,
-  Filter,
   X,
   Copy,
   Check,
@@ -124,7 +123,6 @@ export default function PaytrackDashboard() {
 
   useEffect(() => { if (window.innerWidth < 768) setSidebarOpen(false); }, []);
 
-  // SEARCH - filters by name, ID, type, status, amount
   const filtered = allTransactions.filter((t) => {
     const q = search.toLowerCase().trim();
     if (!q) return true;
@@ -144,7 +142,7 @@ export default function PaytrackDashboard() {
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b px-4 md:px-6 py-4 flex items-center justify-between gap-3 sticky top-0 z-10">
-          <div><h1 className="text-lg md:text-2xl font-bold">{active}</h1><p className="text-xs md:text-sm text-slate-500">Welcome back, Admin</p></div>
+          <div><h1 className="text-lg md:text-2xl font-bold">{active}</h1><p className="text-xs md:text-sm text-slate-500">Welcome back, Victor</p></div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-full">
               <Search size={16} className="text-slate-400 shrink-0" />
@@ -152,7 +150,7 @@ export default function PaytrackDashboard() {
               {search && <button onClick={() => setSearch("")}><X size={14} /></button>}
             </div>
             <button className="relative p-2 bg-slate-100 rounded-full"><Bell size={18} /><span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" /></button>
-            <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">A</div>
+            <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">VI</div>
           </div>
         </header>
 
@@ -250,29 +248,25 @@ export default function PaytrackDashboard() {
         </main>
       </div>
 
-      {/* TRANSACTION DETAILS POPUP */}
       {selectedTxn && (
         <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 p-0 md:p-4" onClick={() => setSelectedTxn(null)}>
           <div className="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-start">
-              <div><p className="text-xs text-slate-500">TRANSACTION DETAILS</p><h2 className="text-xl font-bold">{selectedTxn.amountStr}</h2><p className="text-sm text-slate-500">{selectedTxn.date}</p></div>
-              <button onClick={() => setSelectedTxn(null)} className="p-2 bg-slate-100 rounded-full"><X size={18} /></button>
+            <div className="flex justify-between items-start gap-3">
+              <div className="min-w-0"><p className="text-xs text-slate-500">TRANSACTION DETAILS</p><h2 className="text-xl font-bold">{selectedTxn.amountStr}</h2><p className="text-sm text-slate-500">{selectedTxn.date}</p></div>
+              <button onClick={() => setSelectedTxn(null)} className="p-2 bg-slate-100 rounded-full shrink-0"><X size={18} /></button>
             </div>
-
-            <div className="flex items-center gap-2 mt-4"><StatusBadge status={selectedTxn.status} /><span className="text-sm bg-slate-100 px-2 py-1 rounded-full">{selectedTxn.type}</span></div>
-
+            <div className="flex items-center gap-2 mt-4 flex-wrap"><StatusBadge status={selectedTxn.status} /><span className="text-sm bg-slate-100 px-2 py-1 rounded-full">{selectedTxn.type}</span></div>
             <div className="mt-5 space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-slate-500">Transaction ID</span><span className="font-semibold flex items-center gap-1">{selectedTxn.id}<button onClick={copyId} className="text-blue-600">{copied ? <Check size={14} /> : <Copy size={14} />}</button></span></div>
-              <div className="flex justify-between"><span className="text-slate-500">Reference</span><span className="font-semibold">{selectedTxn.reference}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500">User</span><span className="font-semibold">{selectedTxn.user}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500">Email</span><span className="font-semibold">{selectedTxn.email}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500">Sender</span><span className="font-semibold text-right">{selectedTxn.sender}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500">Receiver</span><span className="font-semibold text-right">{selectedTxn.receiver}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500">Bank</span><span className="font-semibold">{selectedTxn.bank}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500">Fee</span><span className="font-semibold">{selectedTxn.fee}</span></div>
-              <div className="bg-slate-50 p-3 rounded-xl"><p className="text-slate-500 text-xs">Note</p><p className="font-medium">{selectedTxn.note}</p></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Transaction ID</span><span className="font-semibold flex items-center gap-1 text-right break-all">{selectedTxn.id}<button onClick={copyId} className="text-blue-600 shrink-0">{copied ? <Check size={14} /> : <Copy size={14} />}</button></span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Reference</span><span className="font-semibold text-right break-all">{selectedTxn.reference}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">User</span><span className="font-semibold text-right break-words">{selectedTxn.user}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Email</span><span className="font-semibold text-right break-all">{selectedTxn.email}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Sender</span><span className="font-semibold text-right break-words">{selectedTxn.sender}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Receiver</span><span className="font-semibold text-right break-words">{selectedTxn.receiver}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Bank</span><span className="font-semibold text-right break-words">{selectedTxn.bank}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Fee</span><span className="font-semibold">{selectedTxn.fee}</span></div>
+              <div className="bg-slate-50 p-3 rounded-xl"><p className="text-slate-500 text-xs">Note</p><p className="font-medium break-words">{selectedTxn.note}</p></div>
             </div>
-
             <div className="grid grid-cols-2 gap-3 mt-5">
               <button onClick={() => setSelectedTxn(null)} className="py-3 bg-slate-100 rounded-xl font-semibold">Close</button>
               <button onClick={copyId} className="py-3 bg-blue-600 text-white rounded-xl font-semibold">{copied ? "Copied!" : "Copy ID"}</button>
