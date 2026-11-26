@@ -35,7 +35,7 @@ import {
   EyeOff,
 } from "lucide-react";
 
-// LOGIN - CHANGE THIS TO YOUR OWN PASSWORD
+// CHANGE THIS TO YOUR OWN PASSWORD
 const ADMIN_EMAIL = "victor@paytrack.ng";
 const ADMIN_PASSWORD = "Victor123";
 const ADMIN_NAME = "Victor Idima";
@@ -119,7 +119,6 @@ export default function PaytrackDashboard() {
   const [verifyOTP, setVerifyOTP] = useState(false);
   const [verifyID, setVerifyID] = useState(false);
   const [calling, setCalling] = useState(false);
-  // LOGIN STATE - NEW
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -173,7 +172,6 @@ export default function PaytrackDashboard() {
     setTransactions((prev) => prev.map((t) => (t.id === selectedTxn.id ? updated : t))); setSelectedTxn(updated); setActionMsg(msg); setTimeout(() => setActionMsg(""), 5000);
   };
 
-  // LOGIN SCREEN - BLOCKS EVERYTHING IF NOT LOGGED IN
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
@@ -184,16 +182,11 @@ export default function PaytrackDashboard() {
             <p className="text-slate-500 text-sm mt-1">Secure Admin Login<br />Only authorised admins can access transactions.</p>
           </div>
           <form onSubmit={handleLogin} className="mt-6 space-y-3">
-            <div><label className="text-xs font-bold text-slate-500">ADMIN EMAIL</label><input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="victor@paytrack.ng" className="w-full mt-1 px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:border-blue-600 text-sm" required /></div>
+            <div><label className="text-xs font-bold text-slate-500">ADMIN EMAIL</label><input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Enter your admin email" className="w-full mt-1 px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:border-blue-600 text-sm" required /></div>
             <div><label className="text-xs font-bold text-slate-500">PASSWORD</label><div className="relative mt-1"><input type={showPassword ? "text" : "password"} value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="Enter password" className="w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:border-blue-600 text-sm pr-11" required /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3.5 text-slate-400">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
             {loginError && <div className="bg-red-50 border border-red-100 text-red-700 text-xs px-3 py-2.5 rounded-xl font-medium">🚫 {loginError}</div>}
             <button type="submit" disabled={isLocked} className={`w-full py-3.5 rounded-xl font-bold text-white ${isLocked ? "bg-slate-300" : "bg-blue-600 hover:bg-blue-700"}`}>{isLocked ? "Locked - Wait 30s..." : "🔒 Log In Securely"}</button>
           </form>
-          <div className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-3 text-center">
-            <p className="text-xs font-bold text-blue-800">DEMO LOGIN - For Testing</p>
-            <p className="text-xs text-blue-700 mt-1">Email: <b>victor@paytrack.ng</b><br />Password: <b>Victor123</b></p>
-            <button onClick={() => { setLoginEmail(ADMIN_EMAIL); setLoginPassword(ADMIN_PASSWORD); }} className="mt-2 text-xs bg-white border px-3 py-1.5 rounded-full font-semibold text-blue-700">Fill Demo Login →</button>
-          </div>
           <p className="text-[11px] text-slate-400 text-center mt-4 flex items-center justify-center gap-1"><Lock size={11} /> Protected • 3 wrong attempts = 30s lock • Session ends on Logout</p>
         </div>
       </div>
