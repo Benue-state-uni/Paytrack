@@ -6,12 +6,12 @@ import { transactions as seedTransactions, type Transaction, type TransactionSta
 
 const filters = ["All", "Success", "Pending", "Failed", "Flagged"] as const
 const navItems = [
-  { name: "Dashboard", icon: LayoutDashboard },
-  { name: "Transactions", icon: Wallet, badge: "2.4k" },
-  { name: "Fraud Alerts", icon: ShieldAlert, badge: "3", alert: true },
-  { name: "Analytics", icon: FileChartColumn },
-  { name: "Users", icon: Users },
-]
+  { name: "Dashboard", icon: LayoutDashboard, href: "/" },
+  { name: "Transactions", icon: ArrowLeftRight, badge: "12", href: "/transactions" },
+  { name: "Fraud Alerts", icon: ShieldAlert, badge: "3", href: "/fraud-alerts" },
+  { name: "Analytics", icon: BarChart3, href: "/analytics" },
+  { name: "Users", icon: Users, href: "/users" },
+];
 const formatNaira = (value: number) => `₦${value.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 function StatusBadge({ status }: { status: TransactionStatus }) {
@@ -31,12 +31,13 @@ function Sidebar({ active, setActive, open, close }: { active: string; setActive
       <div className="brand"><div className="brand-mark"><Activity size={19} strokeWidth={2.6} /></div><span>PayTrack</span><button aria-label="Close menu" className="mobile-close" onClick={close}><X size={18} /></button></div>
       <div className="workspace-label">WORKSPACE</div>
       <nav aria-label="Main navigation" className="side-nav">
-        {navItems.map(({ name, icon: Icon, badge, alert }) => <button key={name} onClick={() => { setActive(name); close() }} className={`nav-item ${active === name ? "nav-active" : ""}`}><Icon size={18} strokeWidth={1.8} /><span>{name}</span>{badge && <span className={`nav-badge ${alert ? "nav-badge-alert" : ""}`}>{badge}</span>}</button>)}
-      </nav>
-      <div className="side-bottom"><div className="workspace-label">PREFERENCES</div><button className={`nav-item ${active === "Settings" ? "nav-active" : ""}`} onClick={() => { setActive("Settings"); close() }}><Settings size={18} strokeWidth={1.8} /><span>Settings</span></button><div className="support-card"><div className="support-icon"><LifeBuoy size={17} /></div><div><strong>Need a hand?</strong><p>Our team is here for you.</p><button>Get support <ArrowRight size={13} /></button></div></div><div className="sidebar-user"><div className="admin-avatar">VI</div><div className="admin-info"><strong>Victor Idima</strong><span>Administrator</span></div><MoreHorizontal size={18} /></div></div>
-    </aside>
-  </>
-}
+        {navItems.map(({ name, icon: Icon, badge, href }) => (
+  <button key={name} className={activeNav === name ? "nav-item nav-active" : "nav-item"} onClick={() => { setActiveNav(name); if (href) window.location.href = href; }}>
+    <Icon size={18} />
+    {open && <span>{name}</span>}
+    {badge && <span className="nav-badge">{badge}</span>}
+  </button>
+))}
 
 function StatCard({ title, value, change, icon: Icon, tone, note }: { title: string; value: string; change: string; icon: typeof Wallet; tone: string; note: string }) {
   return <article className="stat-card"><div className="stat-top"><span>{title}</span><div className={`stat-icon ${tone}`}><Icon size={18} strokeWidth={1.8} /></div></div><div className="stat-value">{value}</div><div className="stat-foot"><span className={change.startsWith("Needs") ? "change-attention" : "change-positive"}>{change.startsWith("Needs") ? <AlertTriangle size={12} /> : <ArrowUpRight size={14} />}{change}</span><span>{note}</span></div></article>
