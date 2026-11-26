@@ -28,6 +28,9 @@ import {
   ShieldCheck,
   IdCard,
   Lock,
+  History,
+  Smartphone,
+  MapPin,
 } from "lucide-react";
 
 const navItems = [
@@ -40,12 +43,82 @@ const navItems = [
 
 const initialTransactions = [
   { id: "TXN-001", user: "Ada Okafor", email: "ada@example.com", phone: "+234 803 123 4567", amount: 250000, amountStr: "₦250,000", type: "Transfer", status: "Completed", time: "2 min ago", date: "26 Nov 2026, 2:32 PM", sender: "Ada Okafor - 0123456789", receiver: "Emeka Obi - 9876543210", bank: "GTBank", reference: "REF-88412001", fee: "₦25", note: "Rent payment" },
-  { id: "TXN-002", user: "Chidi Eze", email: "chidi@example.com", phone: "+234 805 987 6543", amount: 85500, amountStr: "₦85,500", type: "Withdrawal", status: "Flagged", time: "18 min ago", date: "26 Nov 2026, 2:16 PM", sender: "Chidi Eze - 0223456789", receiver: "ATM - Lekki Branch", bank: "Access Bank", reference: "REF-88412002", fee: "₦100", note: "Flagged: Unusual amount for this user - 8x normal amount", fraudScore: 85, fraudReasons: ["Amount 8x higher than normal", "New device detected", "New receiver"] },
+  { id: "TXN-002", user: "Chidi Eze", email: "chidi@example.com", phone: "+234 805 987 6543", amount: 85500, amountStr: "₦85,500", type: "Withdrawal", status: "Flagged", time: "18 min ago", date: "26 Nov 2026, 2:16 PM", sender: "Chidi Eze - 0223456789", receiver: "ATM - Lekki Branch", bank: "Access Bank", reference: "REF-88412002", fee: "₦100", note: "Flagged: Unusual amount for this user - 8x normal amount", fraudScore: 85, fraudReasons: ["Amount 8x higher than normal", "New device detected", "New location detected"] },
   { id: "TXN-003", user: "Fatima Bello", email: "fatima@example.com", phone: "+234 809 111 2222", amount: 1200000, amountStr: "₦1,200,000", type: "Deposit", status: "Completed", time: "32 min ago", date: "26 Nov 2026, 2:02 PM", sender: "Fatima Bello - Employer", receiver: "Fatima Bello - 0323456789", bank: "FirstBank", reference: "REF-88412003", fee: "₦0", note: "Salary deposit" },
   { id: "TXN-004", user: "Tunde Bakare", email: "tunde@example.com", phone: "+234 807 333 4444", amount: 45000, amountStr: "₦45,000", type: "Transfer", status: "Pending", time: "1 hr ago", date: "26 Nov 2026, 1:34 PM", sender: "Tunde Bakare - 0423456789", receiver: "Aisha Musa - 0523456789", bank: "OPay", reference: "REF-88412004", fee: "₦10", note: "Waiting for confirmation" },
   { id: "TXN-005", user: "Emeka Obi", email: "emeka@example.com", phone: "+234 806 555 6666", amount: 320000, amountStr: "₦320,000", type: "Transfer", status: "Completed", time: "2 hrs ago", date: "26 Nov 2026, 12:30 PM", sender: "Emeka Obi - 9876543210", receiver: "Ada Okafor - 0123456789", bank: "Kuda", reference: "REF-88412005", fee: "₦25", note: "Business payment" },
   { id: "TXN-006", user: "Aisha Musa", email: "aisha@example.com", phone: "+234 808 777 8888", amount: 15000, amountStr: "₦15,000", type: "Deposit", status: "Completed", time: "3 hrs ago", date: "26 Nov 2026, 11:20 AM", sender: "Aisha Musa - Cash", receiver: "Aisha Musa - 0523456789", bank: "Moniepoint", reference: "REF-88412006", fee: "₦0", note: "Cash deposit" },
 ];
+
+// USER HISTORY DATABASE - THIS IS WHAT SYSTEM USES TO DETECT FRAUD
+const userHistoryDB: any = {
+  "Chidi Eze": {
+    avgAmount: 9875, avgStr: "₦9,875", totalTxns: 24, totalVolume: "₦237,000", joined: "Jan 2026", usualDevice: "iPhone 13 - Lagos", usualLocation: "Lagos, Nigeria", risk: "High",
+    currentDevice: "Samsung Galaxy - Abuja (NEW)", currentLocation: "Abuja, Nigeria (NEW)",
+    last5: [
+      { id: "TXN-089", amount: "₦10,000", type: "Transfer", date: "24 Nov 2026", device: "iPhone 13 - Lagos", status: "Completed" },
+      { id: "TXN-076", amount: "₦8,000", type: "Withdrawal", date: "20 Nov 2026", device: "iPhone 13 - Lagos", status: "Completed" },
+      { id: "TXN-061", amount: "₦12,000", type: "Transfer", date: "15 Nov 2026", device: "iPhone 13 - Lagos", status: "Completed" },
+      { id: "TXN-052", amount: "₦9,500", type: "Transfer", date: "10 Nov 2026", device: "iPhone 13 - Lagos", status: "Completed" },
+      { id: "TXN-044", amount: "₦10,000", type: "Deposit", date: "05 Nov 2026", device: "iPhone 13 - Lagos", status: "Completed" },
+    ],
+  },
+  "Ada Okafor": {
+    avgAmount: 180000, avgStr: "₦180,000", totalTxns: 42, totalVolume: "₦7,560,000", joined: "Nov 2025", usualDevice: "iPhone 15 - Abuja", usualLocation: "Abuja, Nigeria", risk: "Low",
+    currentDevice: "iPhone 15 - Abuja", currentLocation: "Abuja, Nigeria",
+    last5: [
+      { id: "TXN-098", amount: "₦200,000", type: "Transfer", date: "25 Nov 2026", device: "iPhone 15 - Abuja", status: "Completed" },
+      { id: "TXN-091", amount: "₦150,000", type: "Transfer", date: "22 Nov 2026", device: "iPhone 15 - Abuja", status: "Completed" },
+      { id: "TXN-084", amount: "₦180,000", type: "Deposit", date: "18 Nov 2026", device: "iPhone 15 - Abuja", status: "Completed" },
+      { id: "TXN-079", amount: "₦210,000", type: "Transfer", date: "12 Nov 2026", device: "iPhone 15 - Abuja", status: "Completed" },
+      { id: "TXN-072", amount: "₦160,000", type: "Transfer", date: "08 Nov 2026", device: "iPhone 15 - Abuja", status: "Completed" },
+    ],
+  },
+  "Fatima Bello": {
+    avgAmount: 950000, avgStr: "₦950,000", totalTxns: 18, totalVolume: "₦17,100,000", joined: "Mar 2026", usualDevice: "Samsung S24 - Kano", usualLocation: "Kano, Nigeria", risk: "Low",
+    currentDevice: "Samsung S24 - Kano", currentLocation: "Kano, Nigeria",
+    last5: [
+      { id: "TXN-095", amount: "₦1,200,000", type: "Deposit", date: "26 Nov 2026", device: "Samsung S24 - Kano", status: "Completed" },
+      { id: "TXN-088", amount: "₦800,000", type: "Transfer", date: "20 Nov 2026", device: "Samsung S24 - Kano", status: "Completed" },
+      { id: "TXN-071", amount: "₦900,000", type: "Deposit", date: "10 Nov 2026", device: "Samsung S24 - Kano", status: "Completed" },
+      { id: "TXN-060", amount: "₦1,100,000", type: "Deposit", date: "01 Nov 2026", device: "Samsung S24 - Kano", status: "Completed" },
+      { id: "TXN-050", amount: "₦750,000", type: "Transfer", date: "25 Oct 2026", device: "Samsung S24 - Kano", status: "Completed" },
+    ],
+  },
+  "Tunde Bakare": {
+    avgAmount: 38000, avgStr: "₦38,000", totalTxns: 31, totalVolume: "₦1,178,000", joined: "Feb 2026", usualDevice: "Tecno Camon - Ibadan", usualLocation: "Ibadan, Nigeria", risk: "Low",
+    currentDevice: "Tecno Camon - Ibadan", currentLocation: "Ibadan, Nigeria",
+    last5: [
+      { id: "TXN-090", amount: "₦40,000", type: "Transfer", date: "24 Nov 2026", device: "Tecno Camon - Ibadan", status: "Completed" },
+      { id: "TXN-082", amount: "₦35,000", type: "Transfer", date: "19 Nov 2026", device: "Tecno Camon - Ibadan", status: "Completed" },
+      { id: "TXN-068", amount: "₦42,000", type: "Withdrawal", date: "14 Nov 2026", device: "Tecno Camon - Ibadan", status: "Completed" },
+      { id: "TXN-055", amount: "₦30,000", type: "Transfer", date: "09 Nov 2026", device: "Tecno Camon - Ibadan", status: "Completed" },
+      { id: "TXN-047", amount: "₦38,000", type: "Deposit", date: "03 Nov 2026", device: "Tecno Camon - Ibadan", status: "Completed" },
+    ],
+  },
+  "Emeka Obi": {
+    avgAmount: 280000, avgStr: "₦280,000", totalTxns: 35, totalVolume: "₦9,800,000", joined: "Dec 2025", usualDevice: "iPhone 14 - Enugu", usualLocation: "Enugu, Nigeria", risk: "Low",
+    currentDevice: "iPhone 14 - Enugu", currentLocation: "Enugu, Nigeria",
+    last5: [
+      { id: "TXN-094", amount: "₦320,000", type: "Transfer", date: "26 Nov 2026", device: "iPhone 14 - Enugu", status: "Completed" },
+      { id: "TXN-085", amount: "₦250,000", type: "Transfer", date: "21 Nov 2026", device: "iPhone 14 - Enugu", status: "Completed" },
+      { id: "TXN-074", amount: "₦300,000", type: "Deposit", date: "16 Nov 2026", device: "iPhone 14 - Enugu", status: "Completed" },
+      { id: "TXN-063", amount: "₦270,000", type: "Transfer", date: "11 Nov 2026", device: "iPhone 14 - Enugu", status: "Completed" },
+      { id: "TXN-051", amount: "₦290,000", type: "Transfer", date: "06 Nov 2026", device: "iPhone 14 - Enugu", status: "Completed" },
+    ],
+  },
+  "Aisha Musa": {
+    avgAmount: 22000, avgStr: "₦22,000", totalTxns: 19, totalVolume: "₦418,000", joined: "Apr 2026", usualDevice: "Infinix - Kaduna", usualLocation: "Kaduna, Nigeria", risk: "Low",
+    currentDevice: "Infinix - Kaduna", currentLocation: "Kaduna, Nigeria",
+    last5: [
+      { id: "TXN-087", amount: "₦15,000", type: "Deposit", date: "26 Nov 2026", device: "Infinix - Kaduna", status: "Completed" },
+      { id: "TXN-080", amount: "₦25,000", type: "Transfer", date: "22 Nov 2026", device: "Infinix - Kaduna", status: "Completed" },
+      { id: "TXN-069", amount: "₦20,000", type: "Deposit", date: "17 Nov 2026", device: "Infinix - Kaduna", status: "Completed" },
+      { id: "TXN-058", amount: "₦28,000", type: "Transfer", date: "12 Nov 2026", device: "Infinix - Kaduna", status: "Completed" },
+      { id: "TXN-046", amount: "₦18,000", type: "Deposit", date: "07 Nov 2026", device: "Infinix - Kaduna", status: "Completed" },
+    ],
+  },
+};
 
 const monthlyData = [
   { month: "Jan", revenue: 4.2, txns: 3200 },
@@ -137,6 +210,7 @@ export default function PaytrackDashboard() {
   const [search, setSearch] = useState("");
   const [transactions, setTransactions] = useState(initialTransactions);
   const [selectedTxn, setSelectedTxn] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [copied, setCopied] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
   const [showNotif, setShowNotif] = useState(false);
@@ -144,7 +218,6 @@ export default function PaytrackDashboard() {
   const [notifRead, setNotifRead] = useState(false);
   const [loggedOut, setLoggedOut] = useState(false);
   const [actionMsg, setActionMsg] = useState("");
-  // VERIFICATION STATE - NEW
   const [verifyCall, setVerifyCall] = useState(false);
   const [verifyOTP, setVerifyOTP] = useState(false);
   const [verifyID, setVerifyID] = useState(false);
@@ -153,7 +226,6 @@ export default function PaytrackDashboard() {
   const profileRef = useRef<any>(null);
 
   useEffect(() => { if (window.innerWidth < 768) setSidebarOpen(false); }, []);
-
   useEffect(() => {
     const handler = (e: any) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotif(false);
@@ -162,11 +234,7 @@ export default function PaytrackDashboard() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
-  // Reset verification when you open a different transaction
-  useEffect(() => {
-    setVerifyCall(false); setVerifyOTP(false); setVerifyID(false); setCalling(false);
-  }, [selectedTxn?.id]);
+  useEffect(() => { setVerifyCall(false); setVerifyOTP(false); setVerifyID(false); setCalling(false); }, [selectedTxn?.id]);
 
   const filtered = transactions.filter((t) => {
     if (filterStatus !== "All" && t.status !== filterStatus) return false;
@@ -189,6 +257,12 @@ export default function PaytrackDashboard() {
     setNotifRead(true);
   };
 
+  const openUserHistory = (userName: string) => {
+    const h = userHistoryDB[userName];
+    const txn = transactions.find((t) => t.user === userName);
+    if (h && txn) setSelectedUser({ ...h, user: userName, email: txn.email, phone: txn.phone, currentTxn: txn });
+  };
+
   const simulateCall = () => {
     setCalling(true);
     setTimeout(() => { setCalling(false); setVerifyCall(true); setActionMsg(`📞 Called ${selectedTxn?.user} on ${selectedTxn?.phone} - User answered: "Yes, that's me"`); setTimeout(() => setActionMsg(""), 4000); }, 1500);
@@ -200,30 +274,15 @@ export default function PaytrackDashboard() {
 
   const handleAction = (action: "approve" | "hold" | "block") => {
     if (!selectedTxn) return;
-    // BLOCK VERIFICATION RULE: Cannot approve Flagged / On Hold without OTP + ID
     if (action === "approve" && needsVerification && !verified) {
       setActionMsg(`🔒 Cannot Approve yet. Complete verification first: OTP + ID required (${verifyCount}/3 done).`);
       setTimeout(() => setActionMsg(""), 4000);
       return;
     }
-    let newStatus = "";
-    let newNote = "";
-    let msg = "";
-    if (action === "approve") {
-      newStatus = "Completed";
-      newNote = needsVerification ? `Verified & Released by Victor Idima - Call: ${verifyCall ? "Yes" : "Skipped"}, OTP: ${verifyOTP ? "Confirmed" : "No"}, ID: ${verifyID ? "Matched" : "No"} - Funds released.` : `Approved by Victor Idima - checked, legit transaction.`;
-      msg = `✅ ${selectedTxn.id} Verified & Released - money sent.`;
-    }
-    if (action === "hold") {
-      newStatus = "On Hold";
-      newNote = `Put On Hold by Victor Idima - suspicious, waiting for user verification. Money frozen. Complete Call + OTP + ID to release.`;
-      msg = `⏸️ ${selectedTxn.id} On Hold - money frozen. Now verify user below.`;
-    }
-    if (action === "block") {
-      newStatus = "Blocked";
-      newNote = `Blocked & Refunded by Victor Idima - confirmed fraud / verification failed. User account flagged, money refunded to sender.`;
-      msg = `🚫 ${selectedTxn.id} Blocked & Refunded.`;
-    }
+    let newStatus = ""; let newNote = ""; let msg = "";
+    if (action === "approve") { newStatus = "Completed"; newNote = needsVerification ? `Verified & Released by Victor Idima - Call: ${verifyCall ? "Yes" : "Skipped"}, OTP: ${verifyOTP ? "Confirmed" : "No"}, ID: ${verifyID ? "Matched" : "No"} - Funds released.` : `Approved by Victor Idima - checked, legit transaction.`; msg = `✅ ${selectedTxn.id} Verified & Released - money sent.`; }
+    if (action === "hold") { newStatus = "On Hold"; newNote = `Put On Hold by Victor Idima - suspicious, waiting for user verification. Money frozen. Complete Call + OTP + ID to release.`; msg = `⏸️ ${selectedTxn.id} On Hold - money frozen. Now verify user below.`; }
+    if (action === "block") { newStatus = "Blocked"; newNote = `Blocked & Refunded by Victor Idima - confirmed fraud / verification failed. User account flagged, money refunded to sender.`; msg = `🚫 ${selectedTxn.id} Blocked & Refunded.`; }
     const updated = { ...selectedTxn, status: newStatus, note: newNote };
     setTransactions((prev) => prev.map((t) => (t.id === selectedTxn.id ? updated : t)));
     setSelectedTxn(updated);
@@ -257,10 +316,7 @@ export default function PaytrackDashboard() {
               {search && <button onClick={() => setSearch("")}><X size={14} /></button>}
             </div>
             <div className="relative" ref={notifRef}>
-              <button onClick={() => { setShowNotif(!showNotif); setShowProfile(false); }} className="relative p-2 bg-slate-100 rounded-full">
-                <Bell size={18} />
-                {!notifRead && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />}
-              </button>
+              <button onClick={() => { setShowNotif(!showNotif); setShowProfile(false); }} className="relative p-2 bg-slate-100 rounded-full"><Bell size={18} />{!notifRead && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />}</button>
               {showNotif && (
                 <div className="absolute right-0 top-12 w-80 max-w-[90vw] bg-white border rounded-2xl shadow-xl overflow-hidden z-30">
                   <div className="p-4 flex justify-between items-center border-b"><p className="font-bold">Notifications</p><button onClick={() => { setNotifRead(true); setShowNotif(false); }} className="text-xs text-blue-600">Mark all read</button></div>
@@ -292,15 +348,9 @@ export default function PaytrackDashboard() {
           </div>
         </header>
 
-        {actionMsg && (
-          <div className="px-4 md:px-6 pt-4"><div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-xl font-medium">{actionMsg}</div></div>
-        )}
+        {actionMsg && (<div className="px-4 md:px-6 pt-4"><div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-xl font-medium">{actionMsg}</div></div>)}
         {(search || filterStatus !== "All") && (
-          <div className="px-4 md:px-6 pt-4">
-            <div className="bg-blue-50 border border-blue-100 text-blue-800 text-sm px-4 py-2 rounded-xl">
-              Showing <b>{filtered.length}</b> result(s) {search && <>for "<b>{search}</b>"</>} {filterStatus !== "All" && <>• Status: <b>{filterStatus}</b></>} <button onClick={() => { setSearch(""); setFilterStatus("All"); }} className="underline ml-2">Clear all</button>
-            </div>
-          </div>
+          <div className="px-4 md:px-6 pt-4"><div className="bg-blue-50 border border-blue-100 text-blue-800 text-sm px-4 py-2 rounded-xl">Showing <b>{filtered.length}</b> result(s) {search && <>for "<b>{search}</b>"</>} {filterStatus !== "All" && <>• Status: <b>{filterStatus}</b></>} <button onClick={() => { setSearch(""); setFilterStatus("All"); }} className="underline ml-2">Clear all</button></div></div>
         )}
 
         <main className="p-4 md:p-6 space-y-6">
@@ -329,7 +379,7 @@ export default function PaytrackDashboard() {
                       {filtered.map((t) => (
                         <tr key={t.id} onClick={() => setSelectedTxn(t)} className="border-t hover:bg-blue-50 cursor-pointer">
                           <td className="p-4 font-medium text-blue-600 underline">{t.id}</td>
-                          <td className="p-4">{t.user}</td>
+                          <td className="p-4"><button onClick={(e) => { e.stopPropagation(); openUserHistory(t.user); }} className="font-medium text-blue-600 underline decoration-dotted">{t.user} <span className="text-[10px] text-slate-400 no-underline">• History</span></button></td>
                           <td className="p-4 font-semibold">{t.amountStr}</td>
                           <td className="p-4">{t.type}</td>
                           <td className="p-4"><StatusBadge status={t.status} /></td>
@@ -339,20 +389,22 @@ export default function PaytrackDashboard() {
                     </tbody>
                   </table>
                 </div>
+                <p className="text-[11px] text-slate-400 px-4 pb-3">Tip: Tap a blue name to see that user's full history - average, device, location.</p>
               </div>
             </>
           )}
           {active === "Transactions" && (
             <div className="bg-white rounded-2xl border overflow-hidden">
-              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap any row to verify + take action.</p>
+              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap row for details. Tap name for history.</p>
                 <div className="flex gap-2 flex-wrap mt-3">{["All", "Completed", "Flagged", "Pending", "On Hold", "Blocked"].map((s) => (<button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{s}</button>))}</div>
               </div>
               <div className="divide-y">
                 {filtered.map((t) => (
-                  <button key={t.id} onClick={() => setSelectedTxn(t)} className="w-full flex justify-between items-center p-4 hover:bg-blue-50 text-left">
-                    <div><p className="font-semibold">{t.user} <span className="text-blue-600 text-xs">• {t.id}</span></p><p className="text-xs text-slate-500">{t.type} • {t.time}</p></div>
-                    <div className="text-right"><p className="font-bold">{t.amountStr}</p><StatusBadge status={t.status} /></div>
-                  </button>
+                  <div key={t.id} className="flex justify-between items-center p-4 hover:bg-blue-50">
+                    <button onClick={() => setSelectedTxn(t)} className="text-left flex-1"><p className="font-semibold">{t.user} <span className="text-blue-600 text-xs">• {t.id}</span></p><p className="text-xs text-slate-500">{t.type} • {t.time}</p></button>
+                    <button onClick={() => openUserHistory(t.user)} className="text-xs bg-slate-100 px-2 py-1 rounded-full mr-2">History</button>
+                    <button onClick={() => setSelectedTxn(t)} className="text-right"><p className="font-bold">{t.amountStr}</p><StatusBadge status={t.status} /></button>
+                  </div>
                 ))}
                 {filtered.length === 0 && <p className="p-6 text-center text-slate-500">No results for "{search}"</p>}
               </div>
@@ -361,8 +413,9 @@ export default function PaytrackDashboard() {
           {active === "Fraud Alerts" && (
             <div className="bg-white p-6 rounded-2xl border">
               <h2 className="font-bold text-lg mb-2 flex items-center gap-2"><ShieldAlert className="text-red-500" /> Fraud Alerts</h2>
-              <p className="text-slate-500 text-sm mb-4">Tap to Hold, Verify (Call + OTP + ID), then Approve or Block.</p>
-              <button onClick={() => setSelectedTxn(transactions.find((t) => t.id === "TXN-002"))} className="w-full text-left p-4 bg-red-50 border border-red-100 rounded-xl flex justify-between"><div><p className="font-bold">Chidi Eze - TXN-002</p><p className="text-sm text-red-600">₦85,500 • {transactions.find((t) => t.id === "TXN-002")?.status} • Fraud Score 85%</p></div><span className="text-blue-600 text-sm">Verify →</span></button>
+              <p className="text-slate-500 text-sm mb-4">System auto-detected this from history. Tap to compare with history.</p>
+              <button onClick={() => setSelectedTxn(transactions.find((t) => t.id === "TXN-002"))} className="w-full text-left p-4 bg-red-50 border border-red-100 rounded-xl flex justify-between"><div><p className="font-bold">Chidi Eze - TXN-002</p><p className="text-sm text-red-600">₦85,500 • {transactions.find((t) => t.id === "TXN-002")?.status} • Fraud Score 85% • Avg is ₦9,875</p></div><span className="text-blue-600 text-sm">Verify →</span></button>
+              <button onClick={() => openUserHistory("Chidi Eze")} className="w-full mt-3 py-3 bg-slate-900 text-white rounded-xl text-sm font-semibold">📜 View Chidi's Full History - Why He Was Flagged</button>
             </div>
           )}
           {active === "Analytics" && (
@@ -386,14 +439,20 @@ export default function PaytrackDashboard() {
             </div>
           )}
           {active === "Users" && (
-            <div className="bg-white p-6 rounded-2xl border"><h2 className="font-bold text-lg mb-2">Users</h2><p className="text-slate-500 text-sm mb-4">Search for a user above, e.g. "Ada" - then tap their transaction to verify.</p>
-              <div className="space-y-2">{filtered.map((t) => (<button key={t.id} onClick={() => setSelectedTxn(t)} className="w-full flex justify-between p-3 bg-slate-50 rounded-xl text-left"><span>{t.user} • {t.email}</span><span className="text-blue-600 text-sm">View →</span></button>))}</div>
+            <div className="bg-white p-6 rounded-2xl border"><h2 className="font-bold text-lg mb-2">Users</h2><p className="text-slate-500 text-sm mb-4">Tap History to see why system trusts or flags them.</p>
+              <div className="space-y-2">{filtered.map((t) => (
+                <div key={t.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
+                  <button onClick={() => setSelectedTxn(t)} className="text-left"><span className="font-medium">{t.user} • {t.email}</span><span className="block text-xs text-slate-500">Avg: {userHistoryDB[t.user]?.avgStr} • {userHistoryDB[t.user]?.totalTxns} txns</span></button>
+                  <button onClick={() => openUserHistory(t.user)} className="text-blue-600 text-sm font-semibold shrink-0">History →</button>
+                </div>
+              ))}</div>
             </div>
           )}
         </main>
       </div>
 
-      {selectedTxn && (
+      {/* TRANSACTION POPUP */}
+      {selectedTxn && !selectedUser && (
         <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 p-0 md:p-4" onClick={() => setSelectedTxn(null)}>
           <div className="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-start gap-3">
@@ -401,19 +460,18 @@ export default function PaytrackDashboard() {
               <button onClick={() => setSelectedTxn(null)} className="p-2 bg-slate-100 rounded-full shrink-0"><X size={18} /></button>
             </div>
             <div className="flex items-center gap-2 mt-4 flex-wrap"><StatusBadge status={selectedTxn.status} /><span className="text-sm bg-slate-100 px-2 py-1 rounded-full">{selectedTxn.type}</span></div>
-
             {selectedTxn.fraudScore && (
               <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl">
-                <div className="flex justify-between"><p className="font-bold text-red-700 text-sm flex items-center gap-1"><AlertTriangle size={14} /> Fraud Score: {selectedTxn.fraudScore}% - HIGH RISK</p></div>
+                <p className="font-bold text-red-700 text-sm flex items-center gap-1"><AlertTriangle size={14} /> Fraud Score: {selectedTxn.fraudScore}% - HIGH RISK</p>
                 <div className="h-2 bg-red-100 rounded-full mt-2"><div className="h-2 bg-red-600 rounded-full" style={{ width: `${selectedTxn.fraudScore}%` }} /></div>
                 <ul className="text-xs text-red-700 mt-2 space-y-1">{selectedTxn.fraudReasons?.map((r: string) => (<li key={r}>• {r}</li>))}</ul>
+                <button onClick={() => openUserHistory(selectedTxn.user)} className="mt-3 w-full py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold">📜 See History Proof - Why Flagged?</button>
               </div>
             )}
-
             <div className="mt-5 space-y-3 text-sm">
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Transaction ID</span><span className="font-semibold flex items-center gap-1 text-right break-all">{selectedTxn.id}<button onClick={copyId} className="text-blue-600 shrink-0">{copied ? <Check size={14} /> : <Copy size={14} />}</button></span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Reference</span><span className="font-semibold text-right break-all">{selectedTxn.reference}</span></div>
-              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">User</span><span className="font-semibold text-right break-words">{selectedTxn.user}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">User</span><button onClick={() => openUserHistory(selectedTxn.user)} className="font-semibold text-right text-blue-600 underline decoration-dotted">{selectedTxn.user} • History →</button></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Phone</span><span className="font-semibold text-right">{selectedTxn.phone}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Email</span><span className="font-semibold text-right break-all">{selectedTxn.email}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Sender</span><span className="font-semibold text-right break-words">{selectedTxn.sender}</span></div>
@@ -422,34 +480,26 @@ export default function PaytrackDashboard() {
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Fee</span><span className="font-semibold">{selectedTxn.fee}</span></div>
               <div className="bg-slate-50 p-3 rounded-xl"><p className="text-slate-500 text-xs">Note / Admin Action</p><p className="font-medium break-words">{selectedTxn.note}</p></div>
             </div>
-
-            {/* VERIFICATION - ONLY FOR FLAGGED / ON HOLD */}
             {needsVerification && (
               <div className="mt-5 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
                 <div className="flex justify-between items-center"><p className="font-bold text-sm flex items-center gap-1"><ShieldCheck size={16} className="text-blue-600" /> Verify User Before Release</p><span className="text-xs font-bold bg-white px-2 py-1 rounded-full">{verifyCount}/3 done</span></div>
                 <div className="h-2 bg-white rounded-full mt-2"><div className="h-2 bg-blue-600 rounded-full transition-all" style={{ width: `${(verifyCount / 3) * 100}%` }} /></div>
-
                 <button onClick={simulateCall} disabled={verifyCall} className={`w-full mt-3 flex items-center justify-between p-3 rounded-xl border text-left ${verifyCall ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
                   <span className="flex items-center gap-2 text-sm font-medium"><Phone size={16} className="text-blue-600" /> 1. Call User - {selectedTxn.phone}</span>
                   <span className="text-xs font-bold">{calling ? "Calling..." : verifyCall ? "✅ Done" : "Call →"}</span>
                 </button>
-
                 <button onClick={() => setVerifyOTP(!verifyOTP)} className={`w-full mt-2 flex items-center justify-between p-3 rounded-xl border text-left ${verifyOTP ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
-                  <span className="flex items-center gap-2 text-sm font-medium"><Lock size={16} className="text-amber-600" /> 2. OTP - Sent to user's phone, user confirmed code</span>
+                  <span className="flex items-center gap-2 text-sm font-medium"><Lock size={16} className="text-amber-600" /> 2. OTP - User confirmed code</span>
                   <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs shrink-0 ${verifyOTP ? "bg-emerald-600 text-white border-emerald-600" : "bg-white"}`}>{verifyOTP ? "✓" : ""}</span>
                 </button>
-
                 <button onClick={() => setVerifyID(!verifyID)} className={`w-full mt-2 flex items-center justify-between p-3 rounded-xl border text-left ${verifyID ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
-                  <span className="flex items-center gap-2 text-sm font-medium"><IdCard size={16} className="text-purple-600" /> 3. ID Check - NIN / Selfie matches account</span>
+                  <span className="flex items-center gap-2 text-sm font-medium"><IdCard size={16} className="text-purple-600" /> 3. ID Check - NIN / Selfie matches</span>
                   <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs shrink-0 ${verifyID ? "bg-emerald-600 text-white border-emerald-600" : "bg-white"}`}>{verifyID ? "✓" : ""}</span>
                 </button>
-
                 {!verified && <p className="text-[11px] text-blue-700 mt-2 text-center">🔒 Approve is locked until OTP + ID are checked.</p>}
                 {verified && <p className="text-[11px] text-emerald-700 font-bold mt-2 text-center">✅ Verified! You can now Approve & Release funds.</p>}
               </div>
             )}
-
-            {/* ADMIN ACTIONS */}
             <div className="mt-5">
               <p className="text-xs font-bold text-slate-500 mb-2">ADMIN ACTION</p>
               <div className="grid grid-cols-3 gap-2">
@@ -457,12 +507,61 @@ export default function PaytrackDashboard() {
                 <button onClick={() => handleAction("hold")} className="py-3 px-1 bg-amber-500 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><PauseCircle size={18} /> Hold</button>
                 <button onClick={() => handleAction("block")} className="py-3 px-1 bg-red-600 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><Ban size={18} /> Block & Refund</button>
               </div>
-              <p className="text-[11px] text-slate-500 mt-2 text-center">Approve = release money • Hold = freeze money • Block = refund + flag user</p>
             </div>
-
             <div className="grid grid-cols-2 gap-3 mt-4">
               <button onClick={() => setSelectedTxn(null)} className="py-3 bg-slate-100 rounded-xl font-semibold">Close</button>
               <button onClick={copyId} className="py-3 bg-blue-600 text-white rounded-xl font-semibold">{copied ? "Copied!" : "Copy ID"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* USER HISTORY POPUP - THE NEW PROOF */}
+      {selectedUser && (
+        <div className="fixed inset-0 bg-black/60 flex items-end md:items-center justify-center z-[60] p-0 md:p-4" onClick={() => setSelectedUser(null)}>
+          <div className="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-start">
+              <div><p className="text-xs text-slate-500 flex items-center gap-1"><History size={12} /> USER HISTORY - DATABASE RECORD</p><h2 className="text-xl font-bold">{selectedUser.user}</h2><p className="text-sm text-slate-500">{selectedUser.email} • {selectedUser.phone}</p><p className="text-xs text-slate-400">Joined: {selectedUser.joined}</p></div>
+              <button onClick={() => setSelectedUser(null)} className="p-2 bg-slate-100 rounded-full shrink-0"><X size={18} /></button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 mt-4 text-center">
+              <div className="bg-slate-50 p-3 rounded-xl"><p className="text-[11px] text-slate-500">Avg Amount</p><p className="font-bold">{selectedUser.avgStr}</p></div>
+              <div className="bg-slate-50 p-3 rounded-xl"><p className="text-[11px] text-slate-500">Total Txns</p><p className="font-bold">{selectedUser.totalTxns}</p></div>
+              <div className="bg-slate-50 p-3 rounded-xl"><p className="text-[11px] text-slate-500">Total Volume</p><p className="font-bold">{selectedUser.totalVolume}</p></div>
+            </div>
+
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+              <p className="font-bold text-sm">⚖️ THIS Transaction vs NORMAL</p>
+              <div className="flex justify-between text-sm mt-2"><span>Normal Avg:</span><b>{selectedUser.avgStr}</b></div>
+              <div className="flex justify-between text-sm"><span>This Txn:</span><b className="text-red-600">{selectedUser.currentTxn.amountStr}</b></div>
+              <div className="flex justify-between text-sm"><span>Times Normal:</span><b className={selectedUser.currentTxn.amount / selectedUser.avgAmount > 3 ? "text-red-600" : "text-emerald-600"}>{(selectedUser.currentTxn.amount / selectedUser.avgAmount).toFixed(1)}x {selectedUser.currentTxn.amount / selectedUser.avgAmount > 3 ? "🚩 TOO HIGH" : "✅ Normal"}</b></div>
+              <div className="h-2 bg-white rounded-full mt-2 overflow-hidden"><div className="h-2 bg-blue-500 rounded-full" style={{ width: `${Math.min(100, (selectedUser.avgAmount / selectedUser.currentTxn.amount) * 100)}%` }} /></div>
+              <p className="text-[11px] text-slate-500 mt-1">Blue = Normal average. If current is way bigger, system auto-flags.</p>
+            </div>
+
+            <div className="mt-4 space-y-2 text-sm">
+              <div className="flex gap-2 items-start bg-slate-50 p-3 rounded-xl"><Smartphone size={16} className="mt-0.5 shrink-0" /><div><p className="text-slate-500 text-xs">Usual Device</p><p className="font-medium">{selectedUser.usualDevice}</p><p className="text-slate-500 text-xs mt-1">This Time:</p><p className={`font-medium ${selectedUser.currentDevice.includes("NEW") ? "text-red-600" : "text-emerald-600"}`}>{selectedUser.currentDevice}</p></div></div>
+              <div className="flex gap-2 items-start bg-slate-50 p-3 rounded-xl"><MapPin size={16} className="mt-0.5 shrink-0" /><div><p className="text-slate-500 text-xs">Usual Location</p><p className="font-medium">{selectedUser.usualLocation}</p><p className="text-slate-500 text-xs mt-1">This Time:</p><p className={`font-medium ${selectedUser.currentLocation.includes("NEW") ? "text-red-600" : "text-emerald-600"}`}>{selectedUser.currentLocation}</p></div></div>
+            </div>
+
+            <p className="font-bold text-sm mt-4 mb-2">Last 5 Transactions - Proof of Normal Behaviour</p>
+            <div className="space-y-2">
+              {selectedUser.last5.map((h: any) => (
+                <div key={h.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl text-sm">
+                  <div><p className="font-semibold">{h.id} • {h.amount}</p><p className="text-xs text-slate-500">{h.type} • {h.date} • {h.device}</p></div>
+                  <StatusBadge status={h.status} />
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-blue-50 p-3 rounded-xl mt-4 text-xs text-blue-800">
+              <b>How System Detected:</b> It compared THIS transaction (₦{selectedUser.currentTxn.amount.toLocaleString()}) to HISTORY (Avg {selectedUser.avgStr}). {selectedUser.currentTxn.amount / selectedUser.avgAmount > 3 ? `It's ${(selectedUser.currentTxn.amount / selectedUser.avgAmount).toFixed(1)}x higher + new device + new location = Auto-Flagged.` : "It's normal, same device, same location = Auto-Approved."}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              <button onClick={() => setSelectedUser(null)} className="py-3 bg-slate-100 rounded-xl font-semibold">Close</button>
+              <button onClick={() => { setSelectedUser(null); setSelectedTxn(selectedUser.currentTxn); }} className="py-3 bg-blue-600 text-white rounded-xl font-semibold">Back to Transaction →</button>
             </div>
           </div>
         </div>
