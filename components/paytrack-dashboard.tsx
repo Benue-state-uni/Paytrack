@@ -38,10 +38,10 @@ function Sidebar({ active, setActive, open, close }: { active: string; setActive
     {badge && <span className="nav-badge">{badge}</span>}
   </button>
 ))}
-          </nav>
+            </nav>
   </aside>
   </>
-  );
+  ;
 }
 function StatCard({ title, value, change, icon: Icon, tone, note }: { title: string; value: string; change: string; icon: typeof Wallet; tone: string; note: string }) {
   return <article className="stat-card"><div className="stat-top"><span>{title}</span><div className={`stat-icon ${tone}`}><Icon size={18} strokeWidth={1.8} /></div></div><div className="stat-value">{value}</div><div className="stat-foot"><span className={change.startsWith("Needs") ? "change-attention" : "change-positive"}>{change.startsWith("Needs") ? <AlertTriangle size={12} /> : <ArrowUpRight size={14} />}{change}</span><span>{note}</span></div></article>
