@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -18,6 +18,9 @@ import {
   X,
   Copy,
   Check,
+  LogOut,
+  Settings,
+  User as UserIcon,
 } from "lucide-react";
 
 const navItems = [
@@ -49,6 +52,12 @@ const monthlyData = [
   { month: "Sep", revenue: 8.7, txns: 6000 },
   { month: "Oct", revenue: 10.5, txns: 7200 },
   { month: "Nov", revenue: 12.4, txns: 8429 },
+];
+
+const notifications = [
+  { id: 1, title: "Fraud Alert - TXN-002", desc: "Chidi Eze • ₦85,500 flagged as unusual", time: "18 min ago", color: "bg-red-100 text-red-600", icon: AlertTriangle, txnId: "TXN-002" },
+  { id: 2, title: "New Deposit Received", desc: "Fatima Bello • ₦1,200,000 salary deposit", time: "32 min ago", color: "bg-emerald-100 text-emerald-600", icon: Wallet, txnId: "TXN-003" },
+  { id: 3, title: "Transaction Pending", desc: "Tunde Bakare • ₦45,000 waiting confirmation", time: "1 hr ago", color: "bg-amber-100 text-amber-600", icon: ArrowLeftRight, txnId: "TXN-004" },
 ];
 
 function RevenueChart() {
@@ -120,10 +129,27 @@ export default function PaytrackDashboard() {
   const [search, setSearch] = useState("");
   const [selectedTxn, setSelectedTxn] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [showNotif, setShowNotif] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [notifRead, setNotifRead] = useState(false);
+  const [loggedOut, setLoggedOut] = useState(false);
+  const notifRef = useRef<any>(null);
+  const profileRef = useRef<any>(null);
 
   useEffect(() => { if (window.innerWidth < 768) setSidebarOpen(false); }, []);
 
+  useEffect(() => {
+    const handler = (e: any) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotif(false);
+      if (profileRef.current && !profileRef.current.contains(e.target)) setShowProfile(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   const filtered = allTransactions.filter((t) => {
+    if (filterStatus !== "All" && t.status !== filterStatus) return false;
     const q = search.toLowerCase().trim();
     if (!q) return true;
     return t.user.toLowerCase().includes(q) || t.id.toLowerCase().includes(q) || t.type.toLowerCase().includes(q) || t.status.toLowerCase().includes(q) || t.amountStr.toLowerCase().includes(q) || t.reference.toLowerCase().includes(q);
@@ -136,28 +162,83 @@ export default function PaytrackDashboard() {
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const openFromNotif = (txnId: string) => {
+    const txn = allTransactions.find((t) => t.id === txnId);
+    if (txn) setSelectedTxn(txn);
+    setShowNotif(false);
+    setNotifRead(true);
+  };
+
+  if (loggedOut) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-3xl border max-w-sm w-full text-center shadow-sm">
+          <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto">VI</div>
+          <h1 className="text-2xl font-bold mt-4">PayTrack</h1>
+          <p className="text-slate-500 text-sm mt-1">You logged out, Victor Idima.<br />See you soon.</p>
+          <button onClick={() => setLoggedOut(false)} className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-semibold">Log Back In</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-100 text-slate-900">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} active={active} setActive={setActive} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b px-4 md:px-6 py-4 flex items-center justify-between gap-3 sticky top-0 z-10">
+        <header className="bg-white border-b px-4 md:px-6 py-4 flex items-center justify-between gap-3 sticky top-0 z-20">
           <div><h1 className="text-lg md:text-2xl font-bold">{active}</h1><p className="text-xs md:text-sm text-slate-500">Welcome back, Victor</p></div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-full">
               <Search size={16} className="text-slate-400 shrink-0" />
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, ID, type..." className="bg-transparent outline-none text-sm w-32 md:w-48" />
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, ID, type..." className="bg-transparent outline-none text-sm w-28 md:w-48" />
               {search && <button onClick={() => setSearch("")}><X size={14} /></button>}
             </div>
-            <button className="relative p-2 bg-slate-100 rounded-full"><Bell size={18} /><span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" /></button>
-            <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">VI</div>
+
+            {/* BELL */}
+            <div className="relative" ref={notifRef}>
+              <button onClick={() => { setShowNotif(!showNotif); setShowProfile(false); }} className="relative p-2 bg-slate-100 rounded-full">
+                <Bell size={18} />
+                {!notifRead && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />}
+              </button>
+              {showNotif && (
+                <div className="absolute right-0 top-12 w-80 max-w-[90vw] bg-white border rounded-2xl shadow-xl overflow-hidden z-30">
+                  <div className="p-4 flex justify-between items-center border-b"><p className="font-bold">Notifications</p><button onClick={() => { setNotifRead(true); setShowNotif(false); }} className="text-xs text-blue-600">Mark all read</button></div>
+                  <div className="divide-y max-h-80 overflow-y-auto">
+                    {notifications.map((n) => {
+                      const NIcon = n.icon;
+                      return (
+                        <button key={n.id} onClick={() => openFromNotif(n.txnId)} className="w-full flex gap-3 p-4 hover:bg-blue-50 text-left">
+                          <div className={`p-2 rounded-lg h-fit shrink-0 ${n.color}`}><NIcon size={16} /></div>
+                          <div className="min-w-0"><p className="font-semibold text-sm">{n.title}</p><p className="text-xs text-slate-500 break-words">{n.desc}</p><p className="text-[11px] text-slate-400 mt-1">{n.time} • Tap to view →</p></div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* PROFILE */}
+            <div className="relative" ref={profileRef}>
+              <button onClick={() => { setShowProfile(!showProfile); setShowNotif(false); }} className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">VI</button>
+              {showProfile && (
+                <div className="absolute right-0 top-12 w-64 bg-white border rounded-2xl shadow-xl overflow-hidden z-30">
+                  <div className="p-4 flex gap-3 border-b"><div className="w-11 h-11 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">VI</div><div className="min-w-0"><p className="font-bold truncate">Victor Idima</p><p className="text-xs text-slate-500 truncate">victor@paytrack.ng</p><span className="text-[11px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Admin</span></div></div>
+                  <button onClick={() => setShowProfile(false)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-sm text-left"><UserIcon size={16} /> My Profile</button>
+                  <button onClick={() => setShowProfile(false)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-sm text-left"><Settings size={16} /> Settings</button>
+                  <button onClick={() => { setShowProfile(false); setLoggedOut(true); }} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-sm text-left text-red-600 border-t"><LogOut size={16} /> Log Out</button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
-        {search && (
+        {(search || filterStatus !== "All") && (
           <div className="px-4 md:px-6 pt-4">
             <div className="bg-blue-50 border border-blue-100 text-blue-800 text-sm px-4 py-2 rounded-xl">
-              Showing <b>{filtered.length}</b> result(s) for "<b>{search}</b>" <button onClick={() => setSearch("")} className="underline ml-2">Clear</button>
+              Showing <b>{filtered.length}</b> result(s) {search && <>for "<b>{search}</b>"</>} {filterStatus !== "All" && <>• Status: <b>{filterStatus}</b></>} <button onClick={() => { setSearch(""); setFilterStatus("All"); }} className="underline ml-2">Clear all</button>
             </div>
           </div>
         )}
@@ -173,12 +254,19 @@ export default function PaytrackDashboard() {
               </div>
 
               <div className="bg-white rounded-2xl border overflow-hidden">
-                <div className="p-4 flex justify-between items-center"><h2 className="font-bold">Recent Transactions • Tap to view</h2><span className="text-xs text-slate-500">{filtered.length} shown</span></div>
+                <div className="p-4 flex flex-col gap-3">
+                  <div className="flex justify-between items-center"><h2 className="font-bold">Recent Transactions • Tap to view</h2><span className="text-xs text-slate-500">{filtered.length} shown</span></div>
+                  <div className="flex gap-2 flex-wrap">
+                    {["All", "Completed", "Flagged", "Pending"].map((s) => (
+                      <button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>{s}{s === "All" ? ` (${allTransactions.length})` : ` (${allTransactions.filter((t) => t.status === s).length})`}</button>
+                    ))}
+                  </div>
+                </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm min-w-[600px]">
                     <thead className="bg-slate-50 text-left text-slate-500"><tr><th className="p-4">ID</th><th className="p-4">User</th><th className="p-4">Amount</th><th className="p-4">Type</th><th className="p-4">Status</th><th className="p-4">Time</th></tr></thead>
                     <tbody>
-                      {filtered.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-slate-500">No transaction found for "{search}". Try "Ada" or "TXN-001"</td></tr>}
+                      {filtered.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-slate-500">No {filterStatus !== "All" ? filterStatus.toLowerCase() : ""} transaction found{search ? ` for "${search}"` : ""}.</td></tr>}
                       {filtered.map((t) => (
                         <tr key={t.id} onClick={() => setSelectedTxn(t)} className="border-t hover:bg-blue-50 cursor-pointer">
                           <td className="p-4 font-medium text-blue-600 underline">{t.id}</td>
@@ -198,7 +286,9 @@ export default function PaytrackDashboard() {
 
           {active === "Transactions" && (
             <div className="bg-white rounded-2xl border overflow-hidden">
-              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap any row to see full details.</p></div>
+              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap any row to see full details.</p>
+                <div className="flex gap-2 flex-wrap mt-3">{["All", "Completed", "Flagged", "Pending"].map((s) => (<button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{s}</button>))}</div>
+              </div>
               <div className="divide-y">
                 {filtered.map((t) => (
                   <button key={t.id} onClick={() => setSelectedTxn(t)} className="w-full flex justify-between items-center p-4 hover:bg-blue-50 text-left">
