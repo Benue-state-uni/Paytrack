@@ -21,6 +21,9 @@ import {
   LogOut,
   Settings,
   User as UserIcon,
+  Ban,
+  PauseCircle,
+  CheckCircle2,
 } from "lucide-react";
 
 const navItems = [
@@ -31,7 +34,7 @@ const navItems = [
   { name: "Users", icon: Users },
 ];
 
-const allTransactions = [
+const initialTransactions = [
   { id: "TXN-001", user: "Ada Okafor", email: "ada@example.com", amount: 250000, amountStr: "₦250,000", type: "Transfer", status: "Completed", time: "2 min ago", date: "26 Nov 2026, 2:32 PM", sender: "Ada Okafor - 0123456789", receiver: "Emeka Obi - 9876543210", bank: "GTBank", reference: "REF-88412001", fee: "₦25", note: "Rent payment" },
   { id: "TXN-002", user: "Chidi Eze", email: "chidi@example.com", amount: 85500, amountStr: "₦85,500", type: "Withdrawal", status: "Flagged", time: "18 min ago", date: "26 Nov 2026, 2:16 PM", sender: "Chidi Eze - 0223456789", receiver: "ATM - Lekki Branch", bank: "Access Bank", reference: "REF-88412002", fee: "₦100", note: "Flagged: Unusual amount for this user" },
   { id: "TXN-003", user: "Fatima Bello", email: "fatima@example.com", amount: 1200000, amountStr: "₦1,200,000", type: "Deposit", status: "Completed", time: "32 min ago", date: "26 Nov 2026, 2:02 PM", sender: "Fatima Bello - Employer", receiver: "Fatima Bello - 0323456789", bank: "FirstBank", reference: "REF-88412003", fee: "₦0", note: "Salary deposit" },
@@ -120,13 +123,15 @@ function StatCard({ title, value, change, icon: Icon, color }: any) {
 }
 
 function StatusBadge({ status }: any) {
-  return <span className={`px-2 py-1 rounded-full text-xs ${status === "Completed" ? "bg-emerald-100 text-emerald-700" : status === "Flagged" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{status}</span>;
+  const style = status === "Completed" ? "bg-emerald-100 text-emerald-700" : status === "Flagged" ? "bg-red-100 text-red-700" : status === "Pending" ? "bg-amber-100 text-amber-700" : status === "Blocked" ? "bg-slate-900 text-white" : status === "On Hold" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-700";
+  return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${style}`}>{status}</span>;
 }
 
 export default function PaytrackDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [active, setActive] = useState("Dashboard");
   const [search, setSearch] = useState("");
+  const [transactions, setTransactions] = useState(initialTransactions);
   const [selectedTxn, setSelectedTxn] = useState<any>(null);
   const [copied, setCopied] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
@@ -134,6 +139,7 @@ export default function PaytrackDashboard() {
   const [showProfile, setShowProfile] = useState(false);
   const [notifRead, setNotifRead] = useState(false);
   const [loggedOut, setLoggedOut] = useState(false);
+  const [actionMsg, setActionMsg] = useState("");
   const notifRef = useRef<any>(null);
   const profileRef = useRef<any>(null);
 
@@ -148,7 +154,7 @@ export default function PaytrackDashboard() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const filtered = allTransactions.filter((t) => {
+  const filtered = transactions.filter((t) => {
     if (filterStatus !== "All" && t.status !== filterStatus) return false;
     const q = search.toLowerCase().trim();
     if (!q) return true;
@@ -163,10 +169,38 @@ export default function PaytrackDashboard() {
   };
 
   const openFromNotif = (txnId: string) => {
-    const txn = allTransactions.find((t) => t.id === txnId);
+    const txn = transactions.find((t) => t.id === txnId);
     if (txn) setSelectedTxn(txn);
     setShowNotif(false);
     setNotifRead(true);
+  };
+
+  // ADMIN ACTIONS - THE NEW PART
+  const handleAction = (action: "approve" | "hold" | "block") => {
+    if (!selectedTxn) return;
+    let newStatus = "";
+    let newNote = "";
+    let msg = "";
+    if (action === "approve") {
+      newStatus = "Completed";
+      newNote = `Approved by Victor Idima - checked, legit transaction.`;
+      msg = `✅ ${selectedTxn.id} Approved - money released.`;
+    }
+    if (action === "hold") {
+      newStatus = "On Hold";
+      newNote = `Put On Hold by Victor Idima - suspicious, waiting for user verification. Money frozen.`;
+      msg = `⏸️ ${selectedTxn.id} On Hold - money frozen.`;
+    }
+    if (action === "block") {
+      newStatus = "Blocked";
+      newNote = `Blocked & Refunded by Victor Idima - confirmed fraud. User account flagged, money refunded to sender.`;
+      msg = `🚫 ${selectedTxn.id} Blocked & Refunded.`;
+    }
+    const updated = { ...selectedTxn, status: newStatus, note: newNote };
+    setTransactions((prev) => prev.map((t) => (t.id === selectedTxn.id ? updated : t)));
+    setSelectedTxn(updated);
+    setActionMsg(msg);
+    setTimeout(() => setActionMsg(""), 4000);
   };
 
   if (loggedOut) {
@@ -196,7 +230,6 @@ export default function PaytrackDashboard() {
               {search && <button onClick={() => setSearch("")}><X size={14} /></button>}
             </div>
 
-            {/* BELL */}
             <div className="relative" ref={notifRef}>
               <button onClick={() => { setShowNotif(!showNotif); setShowProfile(false); }} className="relative p-2 bg-slate-100 rounded-full">
                 <Bell size={18} />
@@ -220,7 +253,6 @@ export default function PaytrackDashboard() {
               )}
             </div>
 
-            {/* PROFILE */}
             <div className="relative" ref={profileRef}>
               <button onClick={() => { setShowProfile(!showProfile); setShowNotif(false); }} className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">VI</button>
               {showProfile && (
@@ -234,6 +266,10 @@ export default function PaytrackDashboard() {
             </div>
           </div>
         </header>
+
+        {actionMsg && (
+          <div className="px-4 md:px-6 pt-4"><div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-xl font-medium">{actionMsg}</div></div>
+        )}
 
         {(search || filterStatus !== "All") && (
           <div className="px-4 md:px-6 pt-4">
@@ -257,8 +293,8 @@ export default function PaytrackDashboard() {
                 <div className="p-4 flex flex-col gap-3">
                   <div className="flex justify-between items-center"><h2 className="font-bold">Recent Transactions • Tap to view</h2><span className="text-xs text-slate-500">{filtered.length} shown</span></div>
                   <div className="flex gap-2 flex-wrap">
-                    {["All", "Completed", "Flagged", "Pending"].map((s) => (
-                      <button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>{s}{s === "All" ? ` (${allTransactions.length})` : ` (${allTransactions.filter((t) => t.status === s).length})`}</button>
+                    {["All", "Completed", "Flagged", "Pending", "On Hold", "Blocked"].map((s) => (
+                      <button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>{s}{s === "All" ? ` (${transactions.length})` : ` (${transactions.filter((t) => t.status === s).length})`}</button>
                     ))}
                   </div>
                 </div>
@@ -286,8 +322,8 @@ export default function PaytrackDashboard() {
 
           {active === "Transactions" && (
             <div className="bg-white rounded-2xl border overflow-hidden">
-              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap any row to see full details.</p>
-                <div className="flex gap-2 flex-wrap mt-3">{["All", "Completed", "Flagged", "Pending"].map((s) => (<button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{s}</button>))}</div>
+              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap any row to see full details + take action.</p>
+                <div className="flex gap-2 flex-wrap mt-3">{["All", "Completed", "Flagged", "Pending", "On Hold", "Blocked"].map((s) => (<button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{s}</button>))}</div>
               </div>
               <div className="divide-y">
                 {filtered.map((t) => (
@@ -304,8 +340,8 @@ export default function PaytrackDashboard() {
           {active === "Fraud Alerts" && (
             <div className="bg-white p-6 rounded-2xl border">
               <h2 className="font-bold text-lg mb-2 flex items-center gap-2"><ShieldAlert className="text-red-500" /> Fraud Alerts</h2>
-              <p className="text-slate-500 text-sm mb-4">Tap the flagged transaction to see why it was flagged.</p>
-              <button onClick={() => setSelectedTxn(allTransactions[1])} className="w-full text-left p-4 bg-red-50 border border-red-100 rounded-xl flex justify-between"><div><p className="font-bold">Chidi Eze - TXN-002</p><p className="text-sm text-red-600">₦85,500 • Flagged: Unusual amount</p></div><span className="text-blue-600 text-sm">View →</span></button>
+              <p className="text-slate-500 text-sm mb-4">Tap the flagged transaction to Approve, Hold, or Block it.</p>
+              <button onClick={() => setSelectedTxn(transactions.find((t) => t.id === "TXN-002"))} className="w-full text-left p-4 bg-red-50 border border-red-100 rounded-xl flex justify-between"><div><p className="font-bold">Chidi Eze - TXN-002</p><p className="text-sm text-red-600">₦85,500 • {transactions.find((t) => t.id === "TXN-002")?.status}</p></div><span className="text-blue-600 text-sm">Take Action →</span></button>
             </div>
           )}
 
@@ -331,7 +367,7 @@ export default function PaytrackDashboard() {
           )}
 
           {active === "Users" && (
-            <div className="bg-white p-6 rounded-2xl border"><h2 className="font-bold text-lg mb-2">Users</h2><p className="text-slate-500 text-sm mb-4">Search for a user above, e.g. "Ada" - then tap their transaction to see details.</p>
+            <div className="bg-white p-6 rounded-2xl border"><h2 className="font-bold text-lg mb-2">Users</h2><p className="text-slate-500 text-sm mb-4">Search for a user above, e.g. "Ada" - then tap their transaction to take action.</p>
               <div className="space-y-2">{filtered.map((t) => (<button key={t.id} onClick={() => setSelectedTxn(t)} className="w-full flex justify-between p-3 bg-slate-50 rounded-xl text-left"><span>{t.user} • {t.email}</span><span className="text-blue-600 text-sm">View →</span></button>))}</div>
             </div>
           )}
@@ -355,9 +391,21 @@ export default function PaytrackDashboard() {
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Receiver</span><span className="font-semibold text-right break-words">{selectedTxn.receiver}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Bank</span><span className="font-semibold text-right break-words">{selectedTxn.bank}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Fee</span><span className="font-semibold">{selectedTxn.fee}</span></div>
-              <div className="bg-slate-50 p-3 rounded-xl"><p className="text-slate-500 text-xs">Note</p><p className="font-medium break-words">{selectedTxn.note}</p></div>
+              <div className="bg-slate-50 p-3 rounded-xl"><p className="text-slate-500 text-xs">Note / Admin Action</p><p className="font-medium break-words">{selectedTxn.note}</p></div>
             </div>
-            <div className="grid grid-cols-2 gap-3 mt-5">
+
+            {/* ADMIN ACTIONS */}
+            <div className="mt-5">
+              <p className="text-xs font-bold text-slate-500 mb-2">ADMIN ACTION - What do you want to do?</p>
+              <div className="grid grid-cols-3 gap-2">
+                <button onClick={() => handleAction("approve")} className="py-3 px-1 bg-emerald-600 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><CheckCircle2 size={18} /> Approve</button>
+                <button onClick={() => handleAction("hold")} className="py-3 px-1 bg-amber-500 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><PauseCircle size={18} /> Hold</button>
+                <button onClick={() => handleAction("block")} className="py-3 px-1 bg-red-600 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><Ban size={18} /> Block & Refund</button>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-2 text-center">Approve = release money • Hold = freeze money • Block = refund + flag user</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mt-4">
               <button onClick={() => setSelectedTxn(null)} className="py-3 bg-slate-100 rounded-xl font-semibold">Close</button>
               <button onClick={copyId} className="py-3 bg-blue-600 text-white rounded-xl font-semibold">{copied ? "Copied!" : "Copy ID"}</button>
             </div>
