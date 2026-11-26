@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Activity, AlertTriangle, ArrowRight, ArrowUpRight, Bell, ChevronDown, CircleHelp, Download, Ellipsis, FileChartColumn, LayoutDashboard, LifeBuoy, Menu, MoreHorizontal, Search, Settings, ShieldAlert, SlidersHorizontal, Users, Wallet, X } from "lucide-react"
+import { Activity, AlertTriangle, ArrowRight, ArrowUpRight, Bell, ChevronDown, CircleHelp, Download, Ellipsis, FileChartColumn, LayoutDashboard, LifeBuoy, Menu, MoreHorizontal, Search, Settings, ShieldAlert, SlidersHorizontal, Users, Wallet, X ArrowLeftRight } from "lucide-react"
 import { transactions as seedTransactions, type Transaction, type TransactionStatus } from "@/data/transactions"
 
 const filters = ["All", "Success", "Pending", "Failed", "Flagged"] as const
