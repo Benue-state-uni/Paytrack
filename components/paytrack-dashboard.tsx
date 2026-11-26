@@ -24,6 +24,10 @@ import {
   Ban,
   PauseCircle,
   CheckCircle2,
+  Phone,
+  ShieldCheck,
+  IdCard,
+  Lock,
 } from "lucide-react";
 
 const navItems = [
@@ -35,12 +39,12 @@ const navItems = [
 ];
 
 const initialTransactions = [
-  { id: "TXN-001", user: "Ada Okafor", email: "ada@example.com", amount: 250000, amountStr: "₦250,000", type: "Transfer", status: "Completed", time: "2 min ago", date: "26 Nov 2026, 2:32 PM", sender: "Ada Okafor - 0123456789", receiver: "Emeka Obi - 9876543210", bank: "GTBank", reference: "REF-88412001", fee: "₦25", note: "Rent payment" },
-  { id: "TXN-002", user: "Chidi Eze", email: "chidi@example.com", amount: 85500, amountStr: "₦85,500", type: "Withdrawal", status: "Flagged", time: "18 min ago", date: "26 Nov 2026, 2:16 PM", sender: "Chidi Eze - 0223456789", receiver: "ATM - Lekki Branch", bank: "Access Bank", reference: "REF-88412002", fee: "₦100", note: "Flagged: Unusual amount for this user" },
-  { id: "TXN-003", user: "Fatima Bello", email: "fatima@example.com", amount: 1200000, amountStr: "₦1,200,000", type: "Deposit", status: "Completed", time: "32 min ago", date: "26 Nov 2026, 2:02 PM", sender: "Fatima Bello - Employer", receiver: "Fatima Bello - 0323456789", bank: "FirstBank", reference: "REF-88412003", fee: "₦0", note: "Salary deposit" },
-  { id: "TXN-004", user: "Tunde Bakare", email: "tunde@example.com", amount: 45000, amountStr: "₦45,000", type: "Transfer", status: "Pending", time: "1 hr ago", date: "26 Nov 2026, 1:34 PM", sender: "Tunde Bakare - 0423456789", receiver: "Aisha Musa - 0523456789", bank: "OPay", reference: "REF-88412004", fee: "₦10", note: "Waiting for confirmation" },
-  { id: "TXN-005", user: "Emeka Obi", email: "emeka@example.com", amount: 320000, amountStr: "₦320,000", type: "Transfer", status: "Completed", time: "2 hrs ago", date: "26 Nov 2026, 12:30 PM", sender: "Emeka Obi - 9876543210", receiver: "Ada Okafor - 0123456789", bank: "Kuda", reference: "REF-88412005", fee: "₦25", note: "Business payment" },
-  { id: "TXN-006", user: "Aisha Musa", email: "aisha@example.com", amount: 15000, amountStr: "₦15,000", type: "Deposit", status: "Completed", time: "3 hrs ago", date: "26 Nov 2026, 11:20 AM", sender: "Aisha Musa - Cash", receiver: "Aisha Musa - 0523456789", bank: "Moniepoint", reference: "REF-88412006", fee: "₦0", note: "Cash deposit" },
+  { id: "TXN-001", user: "Ada Okafor", email: "ada@example.com", phone: "+234 803 123 4567", amount: 250000, amountStr: "₦250,000", type: "Transfer", status: "Completed", time: "2 min ago", date: "26 Nov 2026, 2:32 PM", sender: "Ada Okafor - 0123456789", receiver: "Emeka Obi - 9876543210", bank: "GTBank", reference: "REF-88412001", fee: "₦25", note: "Rent payment" },
+  { id: "TXN-002", user: "Chidi Eze", email: "chidi@example.com", phone: "+234 805 987 6543", amount: 85500, amountStr: "₦85,500", type: "Withdrawal", status: "Flagged", time: "18 min ago", date: "26 Nov 2026, 2:16 PM", sender: "Chidi Eze - 0223456789", receiver: "ATM - Lekki Branch", bank: "Access Bank", reference: "REF-88412002", fee: "₦100", note: "Flagged: Unusual amount for this user - 8x normal amount", fraudScore: 85, fraudReasons: ["Amount 8x higher than normal", "New device detected", "New receiver"] },
+  { id: "TXN-003", user: "Fatima Bello", email: "fatima@example.com", phone: "+234 809 111 2222", amount: 1200000, amountStr: "₦1,200,000", type: "Deposit", status: "Completed", time: "32 min ago", date: "26 Nov 2026, 2:02 PM", sender: "Fatima Bello - Employer", receiver: "Fatima Bello - 0323456789", bank: "FirstBank", reference: "REF-88412003", fee: "₦0", note: "Salary deposit" },
+  { id: "TXN-004", user: "Tunde Bakare", email: "tunde@example.com", phone: "+234 807 333 4444", amount: 45000, amountStr: "₦45,000", type: "Transfer", status: "Pending", time: "1 hr ago", date: "26 Nov 2026, 1:34 PM", sender: "Tunde Bakare - 0423456789", receiver: "Aisha Musa - 0523456789", bank: "OPay", reference: "REF-88412004", fee: "₦10", note: "Waiting for confirmation" },
+  { id: "TXN-005", user: "Emeka Obi", email: "emeka@example.com", phone: "+234 806 555 6666", amount: 320000, amountStr: "₦320,000", type: "Transfer", status: "Completed", time: "2 hrs ago", date: "26 Nov 2026, 12:30 PM", sender: "Emeka Obi - 9876543210", receiver: "Ada Okafor - 0123456789", bank: "Kuda", reference: "REF-88412005", fee: "₦25", note: "Business payment" },
+  { id: "TXN-006", user: "Aisha Musa", email: "aisha@example.com", phone: "+234 808 777 8888", amount: 15000, amountStr: "₦15,000", type: "Deposit", status: "Completed", time: "3 hrs ago", date: "26 Nov 2026, 11:20 AM", sender: "Aisha Musa - Cash", receiver: "Aisha Musa - 0523456789", bank: "Moniepoint", reference: "REF-88412006", fee: "₦0", note: "Cash deposit" },
 ];
 
 const monthlyData = [
@@ -58,7 +62,7 @@ const monthlyData = [
 ];
 
 const notifications = [
-  { id: 1, title: "Fraud Alert - TXN-002", desc: "Chidi Eze • ₦85,500 flagged as unusual", time: "18 min ago", color: "bg-red-100 text-red-600", icon: AlertTriangle, txnId: "TXN-002" },
+  { id: 1, title: "Fraud Alert - TXN-002", desc: "Chidi Eze • ₦85,500 flagged - Fraud Score 85%", time: "18 min ago", color: "bg-red-100 text-red-600", icon: AlertTriangle, txnId: "TXN-002" },
   { id: 2, title: "New Deposit Received", desc: "Fatima Bello • ₦1,200,000 salary deposit", time: "32 min ago", color: "bg-emerald-100 text-emerald-600", icon: Wallet, txnId: "TXN-003" },
   { id: 3, title: "Transaction Pending", desc: "Tunde Bakare • ₦45,000 waiting confirmation", time: "1 hr ago", color: "bg-amber-100 text-amber-600", icon: ArrowLeftRight, txnId: "TXN-004" },
 ];
@@ -140,6 +144,11 @@ export default function PaytrackDashboard() {
   const [notifRead, setNotifRead] = useState(false);
   const [loggedOut, setLoggedOut] = useState(false);
   const [actionMsg, setActionMsg] = useState("");
+  // VERIFICATION STATE - NEW
+  const [verifyCall, setVerifyCall] = useState(false);
+  const [verifyOTP, setVerifyOTP] = useState(false);
+  const [verifyID, setVerifyID] = useState(false);
+  const [calling, setCalling] = useState(false);
   const notifRef = useRef<any>(null);
   const profileRef = useRef<any>(null);
 
@@ -153,6 +162,11 @@ export default function PaytrackDashboard() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // Reset verification when you open a different transaction
+  useEffect(() => {
+    setVerifyCall(false); setVerifyOTP(false); setVerifyID(false); setCalling(false);
+  }, [selectedTxn?.id]);
 
   const filtered = transactions.filter((t) => {
     if (filterStatus !== "All" && t.status !== filterStatus) return false;
@@ -175,32 +189,46 @@ export default function PaytrackDashboard() {
     setNotifRead(true);
   };
 
-  // ADMIN ACTIONS - THE NEW PART
+  const simulateCall = () => {
+    setCalling(true);
+    setTimeout(() => { setCalling(false); setVerifyCall(true); setActionMsg(`📞 Called ${selectedTxn?.user} on ${selectedTxn?.phone} - User answered: "Yes, that's me"`); setTimeout(() => setActionMsg(""), 4000); }, 1500);
+  };
+
+  const needsVerification = selectedTxn && (selectedTxn.status === "Flagged" || selectedTxn.status === "On Hold");
+  const verified = verifyOTP && verifyID;
+  const verifyCount = [verifyCall, verifyOTP, verifyID].filter(Boolean).length;
+
   const handleAction = (action: "approve" | "hold" | "block") => {
     if (!selectedTxn) return;
+    // BLOCK VERIFICATION RULE: Cannot approve Flagged / On Hold without OTP + ID
+    if (action === "approve" && needsVerification && !verified) {
+      setActionMsg(`🔒 Cannot Approve yet. Complete verification first: OTP + ID required (${verifyCount}/3 done).`);
+      setTimeout(() => setActionMsg(""), 4000);
+      return;
+    }
     let newStatus = "";
     let newNote = "";
     let msg = "";
     if (action === "approve") {
       newStatus = "Completed";
-      newNote = `Approved by Victor Idima - checked, legit transaction.`;
-      msg = `✅ ${selectedTxn.id} Approved - money released.`;
+      newNote = needsVerification ? `Verified & Released by Victor Idima - Call: ${verifyCall ? "Yes" : "Skipped"}, OTP: ${verifyOTP ? "Confirmed" : "No"}, ID: ${verifyID ? "Matched" : "No"} - Funds released.` : `Approved by Victor Idima - checked, legit transaction.`;
+      msg = `✅ ${selectedTxn.id} Verified & Released - money sent.`;
     }
     if (action === "hold") {
       newStatus = "On Hold";
-      newNote = `Put On Hold by Victor Idima - suspicious, waiting for user verification. Money frozen.`;
-      msg = `⏸️ ${selectedTxn.id} On Hold - money frozen.`;
+      newNote = `Put On Hold by Victor Idima - suspicious, waiting for user verification. Money frozen. Complete Call + OTP + ID to release.`;
+      msg = `⏸️ ${selectedTxn.id} On Hold - money frozen. Now verify user below.`;
     }
     if (action === "block") {
       newStatus = "Blocked";
-      newNote = `Blocked & Refunded by Victor Idima - confirmed fraud. User account flagged, money refunded to sender.`;
+      newNote = `Blocked & Refunded by Victor Idima - confirmed fraud / verification failed. User account flagged, money refunded to sender.`;
       msg = `🚫 ${selectedTxn.id} Blocked & Refunded.`;
     }
     const updated = { ...selectedTxn, status: newStatus, note: newNote };
     setTransactions((prev) => prev.map((t) => (t.id === selectedTxn.id ? updated : t)));
     setSelectedTxn(updated);
     setActionMsg(msg);
-    setTimeout(() => setActionMsg(""), 4000);
+    setTimeout(() => setActionMsg(""), 5000);
   };
 
   if (loggedOut) {
@@ -219,7 +247,6 @@ export default function PaytrackDashboard() {
   return (
     <div className="flex min-h-screen bg-slate-100 text-slate-900">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} active={active} setActive={setActive} />
-
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b px-4 md:px-6 py-4 flex items-center justify-between gap-3 sticky top-0 z-20">
           <div><h1 className="text-lg md:text-2xl font-bold">{active}</h1><p className="text-xs md:text-sm text-slate-500">Welcome back, Victor</p></div>
@@ -229,7 +256,6 @@ export default function PaytrackDashboard() {
               <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, ID, type..." className="bg-transparent outline-none text-sm w-28 md:w-48" />
               {search && <button onClick={() => setSearch("")}><X size={14} /></button>}
             </div>
-
             <div className="relative" ref={notifRef}>
               <button onClick={() => { setShowNotif(!showNotif); setShowProfile(false); }} className="relative p-2 bg-slate-100 rounded-full">
                 <Bell size={18} />
@@ -252,7 +278,6 @@ export default function PaytrackDashboard() {
                 </div>
               )}
             </div>
-
             <div className="relative" ref={profileRef}>
               <button onClick={() => { setShowProfile(!showProfile); setShowNotif(false); }} className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">VI</button>
               {showProfile && (
@@ -270,7 +295,6 @@ export default function PaytrackDashboard() {
         {actionMsg && (
           <div className="px-4 md:px-6 pt-4"><div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-xl font-medium">{actionMsg}</div></div>
         )}
-
         {(search || filterStatus !== "All") && (
           <div className="px-4 md:px-6 pt-4">
             <div className="bg-blue-50 border border-blue-100 text-blue-800 text-sm px-4 py-2 rounded-xl">
@@ -288,7 +312,6 @@ export default function PaytrackDashboard() {
                 <StatCard title="Active Users" value="3,182" change="+4.1% vs last month" icon={Users} color="bg-purple-100 text-purple-600" />
                 <StatCard title="Fraud Alerts" value="23" change="Needs review" icon={AlertTriangle} color="bg-red-100 text-red-600" />
               </div>
-
               <div className="bg-white rounded-2xl border overflow-hidden">
                 <div className="p-4 flex flex-col gap-3">
                   <div className="flex justify-between items-center"><h2 className="font-bold">Recent Transactions • Tap to view</h2><span className="text-xs text-slate-500">{filtered.length} shown</span></div>
@@ -319,10 +342,9 @@ export default function PaytrackDashboard() {
               </div>
             </>
           )}
-
           {active === "Transactions" && (
             <div className="bg-white rounded-2xl border overflow-hidden">
-              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap any row to see full details + take action.</p>
+              <div className="p-5"><h2 className="font-bold text-lg">All Transactions</h2><p className="text-sm text-slate-500">Tap any row to verify + take action.</p>
                 <div className="flex gap-2 flex-wrap mt-3">{["All", "Completed", "Flagged", "Pending", "On Hold", "Blocked"].map((s) => (<button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${filterStatus === s ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{s}</button>))}</div>
               </div>
               <div className="divide-y">
@@ -336,15 +358,13 @@ export default function PaytrackDashboard() {
               </div>
             </div>
           )}
-
           {active === "Fraud Alerts" && (
             <div className="bg-white p-6 rounded-2xl border">
               <h2 className="font-bold text-lg mb-2 flex items-center gap-2"><ShieldAlert className="text-red-500" /> Fraud Alerts</h2>
-              <p className="text-slate-500 text-sm mb-4">Tap the flagged transaction to Approve, Hold, or Block it.</p>
-              <button onClick={() => setSelectedTxn(transactions.find((t) => t.id === "TXN-002"))} className="w-full text-left p-4 bg-red-50 border border-red-100 rounded-xl flex justify-between"><div><p className="font-bold">Chidi Eze - TXN-002</p><p className="text-sm text-red-600">₦85,500 • {transactions.find((t) => t.id === "TXN-002")?.status}</p></div><span className="text-blue-600 text-sm">Take Action →</span></button>
+              <p className="text-slate-500 text-sm mb-4">Tap to Hold, Verify (Call + OTP + ID), then Approve or Block.</p>
+              <button onClick={() => setSelectedTxn(transactions.find((t) => t.id === "TXN-002"))} className="w-full text-left p-4 bg-red-50 border border-red-100 rounded-xl flex justify-between"><div><p className="font-bold">Chidi Eze - TXN-002</p><p className="text-sm text-red-600">₦85,500 • {transactions.find((t) => t.id === "TXN-002")?.status} • Fraud Score 85%</p></div><span className="text-blue-600 text-sm">Verify →</span></button>
             </div>
           )}
-
           {active === "Analytics" && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -365,9 +385,8 @@ export default function PaytrackDashboard() {
               </div>
             </div>
           )}
-
           {active === "Users" && (
-            <div className="bg-white p-6 rounded-2xl border"><h2 className="font-bold text-lg mb-2">Users</h2><p className="text-slate-500 text-sm mb-4">Search for a user above, e.g. "Ada" - then tap their transaction to take action.</p>
+            <div className="bg-white p-6 rounded-2xl border"><h2 className="font-bold text-lg mb-2">Users</h2><p className="text-slate-500 text-sm mb-4">Search for a user above, e.g. "Ada" - then tap their transaction to verify.</p>
               <div className="space-y-2">{filtered.map((t) => (<button key={t.id} onClick={() => setSelectedTxn(t)} className="w-full flex justify-between p-3 bg-slate-50 rounded-xl text-left"><span>{t.user} • {t.email}</span><span className="text-blue-600 text-sm">View →</span></button>))}</div>
             </div>
           )}
@@ -382,10 +401,20 @@ export default function PaytrackDashboard() {
               <button onClick={() => setSelectedTxn(null)} className="p-2 bg-slate-100 rounded-full shrink-0"><X size={18} /></button>
             </div>
             <div className="flex items-center gap-2 mt-4 flex-wrap"><StatusBadge status={selectedTxn.status} /><span className="text-sm bg-slate-100 px-2 py-1 rounded-full">{selectedTxn.type}</span></div>
+
+            {selectedTxn.fraudScore && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl">
+                <div className="flex justify-between"><p className="font-bold text-red-700 text-sm flex items-center gap-1"><AlertTriangle size={14} /> Fraud Score: {selectedTxn.fraudScore}% - HIGH RISK</p></div>
+                <div className="h-2 bg-red-100 rounded-full mt-2"><div className="h-2 bg-red-600 rounded-full" style={{ width: `${selectedTxn.fraudScore}%` }} /></div>
+                <ul className="text-xs text-red-700 mt-2 space-y-1">{selectedTxn.fraudReasons?.map((r: string) => (<li key={r}>• {r}</li>))}</ul>
+              </div>
+            )}
+
             <div className="mt-5 space-y-3 text-sm">
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Transaction ID</span><span className="font-semibold flex items-center gap-1 text-right break-all">{selectedTxn.id}<button onClick={copyId} className="text-blue-600 shrink-0">{copied ? <Check size={14} /> : <Copy size={14} />}</button></span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Reference</span><span className="font-semibold text-right break-all">{selectedTxn.reference}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">User</span><span className="font-semibold text-right break-words">{selectedTxn.user}</span></div>
+              <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Phone</span><span className="font-semibold text-right">{selectedTxn.phone}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Email</span><span className="font-semibold text-right break-all">{selectedTxn.email}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Sender</span><span className="font-semibold text-right break-words">{selectedTxn.sender}</span></div>
               <div className="flex justify-between gap-3"><span className="text-slate-500 shrink-0">Receiver</span><span className="font-semibold text-right break-words">{selectedTxn.receiver}</span></div>
@@ -394,11 +423,37 @@ export default function PaytrackDashboard() {
               <div className="bg-slate-50 p-3 rounded-xl"><p className="text-slate-500 text-xs">Note / Admin Action</p><p className="font-medium break-words">{selectedTxn.note}</p></div>
             </div>
 
+            {/* VERIFICATION - ONLY FOR FLAGGED / ON HOLD */}
+            {needsVerification && (
+              <div className="mt-5 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                <div className="flex justify-between items-center"><p className="font-bold text-sm flex items-center gap-1"><ShieldCheck size={16} className="text-blue-600" /> Verify User Before Release</p><span className="text-xs font-bold bg-white px-2 py-1 rounded-full">{verifyCount}/3 done</span></div>
+                <div className="h-2 bg-white rounded-full mt-2"><div className="h-2 bg-blue-600 rounded-full transition-all" style={{ width: `${(verifyCount / 3) * 100}%` }} /></div>
+
+                <button onClick={simulateCall} disabled={verifyCall} className={`w-full mt-3 flex items-center justify-between p-3 rounded-xl border text-left ${verifyCall ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
+                  <span className="flex items-center gap-2 text-sm font-medium"><Phone size={16} className="text-blue-600" /> 1. Call User - {selectedTxn.phone}</span>
+                  <span className="text-xs font-bold">{calling ? "Calling..." : verifyCall ? "✅ Done" : "Call →"}</span>
+                </button>
+
+                <button onClick={() => setVerifyOTP(!verifyOTP)} className={`w-full mt-2 flex items-center justify-between p-3 rounded-xl border text-left ${verifyOTP ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
+                  <span className="flex items-center gap-2 text-sm font-medium"><Lock size={16} className="text-amber-600" /> 2. OTP - Sent to user's phone, user confirmed code</span>
+                  <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs shrink-0 ${verifyOTP ? "bg-emerald-600 text-white border-emerald-600" : "bg-white"}`}>{verifyOTP ? "✓" : ""}</span>
+                </button>
+
+                <button onClick={() => setVerifyID(!verifyID)} className={`w-full mt-2 flex items-center justify-between p-3 rounded-xl border text-left ${verifyID ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}>
+                  <span className="flex items-center gap-2 text-sm font-medium"><IdCard size={16} className="text-purple-600" /> 3. ID Check - NIN / Selfie matches account</span>
+                  <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs shrink-0 ${verifyID ? "bg-emerald-600 text-white border-emerald-600" : "bg-white"}`}>{verifyID ? "✓" : ""}</span>
+                </button>
+
+                {!verified && <p className="text-[11px] text-blue-700 mt-2 text-center">🔒 Approve is locked until OTP + ID are checked.</p>}
+                {verified && <p className="text-[11px] text-emerald-700 font-bold mt-2 text-center">✅ Verified! You can now Approve & Release funds.</p>}
+              </div>
+            )}
+
             {/* ADMIN ACTIONS */}
             <div className="mt-5">
-              <p className="text-xs font-bold text-slate-500 mb-2">ADMIN ACTION - What do you want to do?</p>
+              <p className="text-xs font-bold text-slate-500 mb-2">ADMIN ACTION</p>
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => handleAction("approve")} className="py-3 px-1 bg-emerald-600 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><CheckCircle2 size={18} /> Approve</button>
+                <button onClick={() => handleAction("approve")} disabled={needsVerification && !verified} className={`py-3 px-1 rounded-xl font-semibold text-xs flex flex-col items-center gap-1 ${needsVerification && !verified ? "bg-slate-200 text-slate-400" : "bg-emerald-600 text-white"}`}><CheckCircle2 size={18} /> {needsVerification && !verified ? "Locked" : "Approve"}</button>
                 <button onClick={() => handleAction("hold")} className="py-3 px-1 bg-amber-500 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><PauseCircle size={18} /> Hold</button>
                 <button onClick={() => handleAction("block")} className="py-3 px-1 bg-red-600 text-white rounded-xl font-semibold text-xs flex flex-col items-center gap-1"><Ban size={18} /> Block & Refund</button>
               </div>
