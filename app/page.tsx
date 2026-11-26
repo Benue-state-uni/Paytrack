@@ -1,5 +1,5 @@
-import { PayTrackDashboard } from "@/components/paytrack-dashboard"
+import PaytrackDashboard from "../components/paytrack-dashboard";
 
-export default function Page() {
-  return <PayTrackDashboard />
+export default function Home() {
+  return <PaytrackDashboard />;
 }
